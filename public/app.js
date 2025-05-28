@@ -26,7 +26,7 @@ onAuthStateChanged(auth, (user) => {
         secaoDeslogado.hidden = true;
         infosUsuario.innerHTML = `<h3>Hello ${user.displayName}!</h3> <p>User ID: ${user.uid}</p>`;
 
-        window.location.href = "mural.html";
+        window.location.href = "novoUser.html";
     } else {
         // Usuário deslogado
         secaoLogado.hidden = true;
