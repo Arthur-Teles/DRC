@@ -6,7 +6,9 @@
     <title>Mural do Companheirismo</title>
     <link rel="stylesheet" href="css/mural.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
     <script type="module" src="mural.js" defer></script>
+    <script type="module" src="voltar.js" defer></script>
 </head>
 <body>
     <header>
@@ -24,7 +26,19 @@
     </header>
 
     <main class="content-area">
-        
+        <div id="comentar"><p>✎</p></div>
+        <div id="gallery"></div>
+        <div id="caixa-comentar">
+            <p id="fechar-comentar">X</p>
+            <h3>Faça um comentário de companheirismo sobre alguém!</h3>
+            <label for="input-comentario">Pessoa:</label>
+            <select id="input-comentario-pessoa">
+
+            </select>
+            <label for="input-comentario-texto">Texto do Comentário:</label>
+            <textarea id="input-comentario-texto"></textarea>
+            <button id="finalizar-comentario">Comentar</button>
+        </div>
     </main>
     <footer>
         <p>© 2025 Capítulo Belo Horizonte Nº 12 - Ordem DeMolay</p>

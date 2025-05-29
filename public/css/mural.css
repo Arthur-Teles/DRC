@@ -4,6 +4,7 @@
     --light-gray: #f5f5f5;  /* Cinza claro */
     --white: #ffffff;
     --text: #333333;
+    --border: #ddd;
 }
 
 /* Reset básico */
@@ -17,6 +18,10 @@
 body {
     background-color: var(--white);
     color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Garante que o body ocupe pelo menos a tela toda */
+    overflow-x: auto;
 }
 
 /* Header */
@@ -90,11 +95,16 @@ header h1 span {
 
 /* Área de conteúdo */
 .content-area {
-    height: 100vh;
+    flex: 1;
     background-color: var(--light-gray);
-    padding: 2rem;
-    width: 100%;
-    margin: 0 auto;
+    padding-top: 8vh;
+    padding-left: 12vw;
+    padding-bottom: 2rem;
+    padding-right: 2rem;
+    min-width: 100%; /* Mínimo da largura do viewport */
+    width: max-content; /* Expande para o tamanho do conteúdo */
+    overflow-x: auto; /* Scroll horizontal quando necessário */
+    overflow-y: auto; /* Scroll vertical quando necessário */
 }
 
 /* Footer */
@@ -104,18 +114,178 @@ footer {
     text-align: center;
     padding: 1rem;
     font-size: 0.9rem;
-}
-
-#meu-mural {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-}
-
-#meu-mural-painel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
     width: 100%;
+}
+
+#gallery {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    width: max-content; /* Expande conforme o conteúdo */
+    min-width: 100%; /* Mínimo da largura do container */
+    overflow: scroll;
+}
+
+.card {
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+#comentar {
+    padding: 3rem;
+    background-color: var(--primary);
+    border-radius: 50%;
+    position: absolute;
+    top: 20vh;
+    left: 3vw;
+    width: 3vw;
+    height: 3vh;
+    color: white;
+    font-size: 300%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#caixa-comentar {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    z-index: 1000;
+    display: none;
+    border: 1px solid var(--border);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Botão Fechar */
+#fechar-comentar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--secondary);
+    font-weight: bold;
+    transition: color 0.3s;
+    padding: 5px;
+}
+
+/* Título */
+#caixa-comentar h3 {
+    color: var(--primary);
+    margin: 10px 0 20px;
+    font-size: clamp(1.1rem, 4vw, 1.3rem);
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Campos do Formulário */
+#caixa-comentar label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--primary);
+    font-size: clamp(0.9rem, 3vw, 1rem);
+}
+
+#input-comentario-pessoa {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: clamp(0.9rem, 3vw, 1rem);
+    background-color: var(--white);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+}
+
+#input-comentario-texto {
+    width: 100%;
+    height: clamp(120px, 40vh, 200px);
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: clamp(0.9rem, 3vw, 1rem);
+    resize: vertical;
+    margin-bottom: 15px;
+    min-height: 120px;
+}
+
+#finalizar-comentario {
+    background-color: #4CAF50; /* verde bonito */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#finalizar-comentario:hover {
+    background-color: #45a049;
+}
+
+/* Media Queries para ajustes específicos */
+@media (max-width: 600px) {
+    #caixa-comentar {
+        padding: 20px 15px;
+        width: 95%;
+    }
+    
+    #fechar-comentar {
+        top: 10px;
+        right: 10px;
+    }
+    
+    #input-comentario-pessoa {
+        padding: 10px 12px;
+    }
+    
+    #input-comentario-texto {
+        padding: 12px;
+    }
+
+    #finalizar-comentario {
+        width: 100%;
+        font-size: 18px;
+        padding: 14px;
+    }
+}
+
+@media (max-width: 400px) {
+    #caixa-comentar {
+        border-radius: 8px;
+    }
+    
+    #input-comentario-pessoa,
+    #input-comentario-texto {
+        font-size: 0.9rem;
+    }
+}
+
+#comentar p:hover {
+    cursor: pointer;
 }

@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mural do Companheirismo</title>
-    <link rel="stylesheet" href="css/mural.css">
+    <link rel="stylesheet" href="css/novoUser.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script type="module" src="mural.js" defer></script>
+    <script type="module" src="participar.js" defer></script>
+    <script type="module" src="voltar.js" defer></script>
 </head>
 <body>
     <header>
@@ -24,17 +25,21 @@
     </header>
 
     <main class="content-area">
-        <button></button>
         <section id="meu-mural-painel">
             <section id="meu-mural">
                 <h2>Entre para o Mural do Companheirismo do BH12!</h2>
                 <form>
-                    <label for="input-nome">Nome:</label>
+                    <label for="input-nome">Nome Completo:</label>
                     <input type="text" id="input-nome"><br><br>
-                    <label for="input-idade">Idade:</label>
-                    <input type="number" id="input-idade"><br><br>
-                    <label for="input-amizade">O que mais prezo em uma amizade:</label>
-                    <input type="text" id="input-amizade"><br><br>
+                    <label for="input-status">Status na Ordem:</label>
+                    <select id="input-status">
+                        <option value="DeMolay Ativo">DeMolay Ativo</option>
+                        <option value="Sênior DeMolay">Sênior DeMolay</option>
+                        <option value="Sênior DeMolay & Maçom">Sênior/Maçom</option>
+                        <option value="Maçom">Maçom</option>
+                    </select>
+                    <label for="input-amizade">Para você, qual a importância e propósito da nossa 4ª vela?</label>
+                    <textarea id="input-amizade"></textarea><br><br>
                     <label for="input-foto">Selecione uma foto sua</label>
                     <input type="file" id="input-foto"><br><br>
                 </form>
