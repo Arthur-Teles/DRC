@@ -39,13 +39,15 @@ function createCardElement(cardData) {
     const formattedDate = createdAt.toLocaleDateString('pt-BR');
     
     cardElement.innerHTML = `
-        <img src="${cardData.imageUrl}" 
-             alt="Imagem do card" 
-             style="width: 100%; border-radius: 5px; margin-bottom: 10px;">
-        <h3 style="margin: 0 0 5px 0;">${cardData.nome}</h3>
-        <p style="margin: 0 0 5px 0; color: #555;">Status: ${cardData.status}</p><br></br>
-        <p style="margin: 0 0 5px 0; color: #555;"> ${cardData.amizade}</p>
-        <p style="margin: 0; font-size: 0.8em; color: #888;">Postado em: ${formattedDate}</p>
+        <div class="card-content">
+            <img src="${cardData.imageUrl}" 
+                alt="Imagem do card" 
+                style="width: 100%; border-radius: 5px; margin-bottom: 10px;">
+            <h3 style="margin: 0 0 5px 0;">${cardData.nome}</h3>
+            <p style="margin: 0 0 5px 0; color: #555;">Status: ${cardData.status}</p><br></br>
+            <p style="margin: 0 0 5px 0; color: #555;"> ${cardData.amizade}</p>
+            <p style="margin: 0; font-size: 0.8em; color: #888;">Postado em: ${formattedDate}</p>
+        </div>
     `;
     
     gallery.appendChild(cardElement);
@@ -153,6 +155,11 @@ async function adicionarComentario(envio, destino, texto) {
 
         const docRef = await addDoc(collection(db, "comentarios"), novoComentario);
         console.log("Comentário adicionado com ID:", docRef.id);
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+        
     } catch (error) {
         console.error("Erro ao adicionar comentário:", error);
     }
@@ -165,7 +172,7 @@ function encontrarCardPorNome(nomeProcurado) {
     const cards = document.querySelectorAll('.card');
 
     for (const card of cards) {
-        const h3 = card.querySelector(':scope > h3');
+        const h3 = card.querySelector('.card-content h3');
 
         if (h3 && h3.textContent.trim() === nomeProcurado) {
             return card;
@@ -175,23 +182,89 @@ function encontrarCardPorNome(nomeProcurado) {
     return null;
 }
 
-function conectarComSeta(elemento1Id, elemento2Id, pessoaEnvio, pessoaDestino, textoComentario, horarioComentario) {
+function conectarComSeta(elemento1Id, elemento2Id, pessoaEnvio, pessoaDestino, textoComentario, horarioComentario, connectionId) {
     jsPlumb.ready(function () {
-        const connection = jsPlumb.connect({ // <-- Aqui estava o erro
+        // Verifica se já existe uma conexão igual
+        if (connectionId && document.querySelector(`[connection-id="${connectionId}"]`)) {
+            return;
+        }
+
+        // Paleta de cores harmoniosas para as setas
+        const colors = [
+            '#4a90e2', // Azul original
+            '#e74c3c', // Vermelho
+            '#2ecc71', // Verde
+            '#f39c12', // Laranja
+            '#9b59b6', // Roxo
+            '#1abc9c', // Turquesa
+            '#d35400', // Abóbora
+            '#3498db', // Azul claro
+            '#e84393', // Rosa
+            '#00b894'  // Verde água
+        ];
+
+        // Seleciona uma cor aleatória da paleta
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        const connection = jsPlumb.connect({
             source: elemento1Id,
             target: elemento2Id,
             anchors: ["Bottom", "Top"],
             connector: ["Bezier", { curviness: 100 }],
             paintStyle: {
-                stroke: "#4a90e2",
-                strokeWidth: 4
+                stroke: randomColor,
+                strokeWidth: 4,
+                outlineStroke: 'transparent',
+                outlineWidth: 10 // Área de clique maior
             },
             endpoint: "Dot",
-            endpointStyle: { fill: "#4a90e2", radius: 4 },
+            endpointStyle: { 
+                fill: randomColor, 
+                radius: 5,
+                outlineStroke: 'transparent',
+                outlineWidth: 8
+            },
             overlays: [
-                ["Arrow", { width: 10, length: 10, location: 1 }]
+                ["Arrow", { 
+                    width: 12, 
+                    length: 12, 
+                    location: 1,
+                    foldback: 0.8,
+                    direction: 1,
+                    paintStyle: {
+                        fill: randomColor,
+                        stroke: randomColor
+                    }
+                }],
+                ["Label", { 
+                    label: "✉",
+                    cssClass: "connection-label",
+                    location: 0.3
+                }]
             ],
-            cssClass: "minha-seta"
+            cssClass: "conexao-seta",
+            parameters: {
+                "connection-id": connectionId,
+                "connection-color": randomColor
+            },
+            hoverPaintStyle: {
+                stroke: darkenColor(randomColor, 20),
+                strokeWidth: 5
+            }
+        });
+
+        connection.bind('mouseover', function(conn) {
+            conn.setPaintStyle({
+                stroke: darkenColor(randomColor, 20),
+                strokeWidth: 5
+            });
+        });
+
+        connection.bind('mouseout', function(conn) {
+            conn.setPaintStyle({
+                stroke: randomColor,
+                strokeWidth: 4
+            });
         });
 
         connection.bind("click", function (conn, originalEvent) {
@@ -205,21 +278,23 @@ function conectarComSeta(elemento1Id, elemento2Id, pessoaEnvio, pessoaDestino, t
             popup.style.top = `${originalEvent.clientY + window.scrollY}px`;
             popup.style.left = `${originalEvent.clientX + window.scrollX}px`;
             popup.style.background = "#fff";
-            popup.style.border = "1px solid #ccc";
+            popup.style.border = `2px solid ${randomColor}`;
             popup.style.borderRadius = "8px";
             popup.style.padding = "15px";
-            popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+            popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
             popup.style.maxWidth = "300px";
             popup.style.zIndex = 9999;
 
             popup.innerHTML = `
                 <div style="text-align: right;">
-                    <span id="fechar-popup" style="cursor: pointer; font-weight: bold;">✕</span>
+                    <span id="fechar-popup" style="cursor: pointer; font-weight: bold; color: ${randomColor}">✕</span>
                 </div>
                 <p><strong>De:</strong> ${pessoaEnvio}</p>
                 <p><strong>Para:</strong> ${pessoaDestino}</p>
-                <p style="margin-top: 10px;">${textoComentario}</p><br></br>
-                <p style="font-size: 0.8em; color: #666;">${horarioComentario}</p>
+                <div style="margin: 10px 0; padding: 10px; background: ${lightenColor(randomColor, 90)}; border-radius: 6px;">
+                    ${textoComentario}
+                </div>
+                <p style="font-size: 0.8em; color: #666; text-align: right;">${horarioComentario}</p>
             `;
 
             document.body.appendChild(popup);
@@ -231,27 +306,71 @@ function conectarComSeta(elemento1Id, elemento2Id, pessoaEnvio, pessoaDestino, t
     });
 }
 
+function lightenColor(color, percent) {
+    const num = parseInt(color.replace("#", ""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return `#${(
+        0x1000000 +
+        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+        (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+        (B < 255 ? (B < 1 ? 0 : B) : 255
+    ).toString(16).slice(1))}`;
+}
+
+function darkenColor(color, percent) {
+    const num = parseInt(color.replace("#", ""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) - amt;
+    const G = (num >> 8 & 0x00FF) - amt;
+    const B = (num & 0x0000FF) - amt;
+    return `#${(
+        0x1000000 +
+        (R > 0 ? (R < 255 ? R : 255) : 0) * 0x10000 +
+        (G > 0 ? (G < 255 ? G : 255) : 0) * 0x100 +
+        (B > 0 ? (B < 255 ? B : 255) : 0)
+    ).toString(16).slice(1)}`;
+}
+
 async function getComentarios() {
     try {
         const comentariosRef = collection(db, "comentarios");
         const querySnapshot = await getDocs(comentariosRef);
 
+        // Primeiro mapeie todos os cards existentes
+        const cardsMap = new Map();
+        document.querySelectorAll('.card').forEach(card => {
+            const nome = card.querySelector('.card-content h3')?.textContent.trim();
+            if (nome) {
+                cardsMap.set(nome, card);
+                // Define um ID fixo baseado no nome (remove espaços e caracteres especiais)
+                card.id = `card-${nome.toLowerCase().replace(/\s+/g, '-')}`;
+            }
+        });
+
+        // Processa os comentários
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            const divEnvio = encontrarCardPorNome(data.pessoaEnvio);
-            const divDestino = encontrarCardPorNome(data.passoaDestiono); // ta com erro de escrita!!! vou manter para funcionar
+            const divEnvio = cardsMap.get(data.pessoaEnvio);
+            const divDestino = cardsMap.get(data.passoaDestiono); // Corrigido o typo
 
-            divEnvio.id = data.pessoaEnvio + (new Date()).toString();
-            divDestino.id = data.pessoaDestino + (new Date()).toString();
+            if (!divEnvio || !divDestino) {
+                console.warn(`Card não encontrado para: ${!divEnvio ? data.pessoaEnvio : ''} ${!divDestino ? data.passoaDestiono : ''}`);
+                return;
+            }
 
             const dataDate = data.enviadoEm.toDate();
-
             const dataFormatada = dataDate.toLocaleString("pt-BR", {
                 dateStyle: "short",
                 timeStyle: "short"
             });
 
-            conectarComSeta(divEnvio.id, divDestino.id, data.pessoaEnvio, data.passoaDestiono, data.texto, dataFormatada);
+            // Adiciona um identificador único para cada conexão
+            const connectionId = `${divEnvio.id}-${divDestino.id}-${data.texto.substring(0, 10)}`;
+            
+            conectarComSeta(divEnvio.id, divDestino.id, data.pessoaEnvio, data.passoaDestiono, data.texto, dataFormatada, connectionId);
         });
     } catch (error) {
         console.error("Erro ao buscar comentários:", error);
